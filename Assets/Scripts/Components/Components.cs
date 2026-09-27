@@ -1,10 +1,18 @@
-using Unity.Entities;
+п»їusing Unity.Entities;
 using Unity.Mathematics;
 
 public struct Health : IComponentData
 {
     public float Current;
     public float Max;
+}
+
+public struct Stamina : IComponentData
+{
+    public float Current;
+    public float Max;
+    public float RegenRate;   // РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ РІ СЃРµРєСѓРЅРґСѓ (РІ РїРѕРєРѕРµ)
+    public float DrainRate;   // СЂР°СЃС…РѕРґ РІ СЃРµРєСѓРЅРґСѓ (РїСЂРё РґРІРёР¶РµРЅРёРё)
 }
 
 public struct MoveSpeed : IComponentData
@@ -21,7 +29,6 @@ public struct PlayerTag : IComponentData { }
 
 public struct EnemyTag : IComponentData { }
 
-// Для врагов — цель (позиция игрока). Можно хранить Entity игрока, но для простоты float3.
 public struct TargetPosition : IComponentData
 {
     public float3 Value;
@@ -29,9 +36,9 @@ public struct TargetPosition : IComponentData
 
 public struct EnemySpawner : IComponentData
 {
-    public Entity Prefab;          // Entity-префаб врага
-    public float Interval;         // n секунд
-    public int Count;              // m врагов за раз
-    public float Radius;           // радиус спавна вокруг центра
-    public float Timer;            // внутренний таймер
+    public Entity Prefab;
+    public float Interval;
+    public int Count;
+    public float Radius;
+    public float Timer;
 }

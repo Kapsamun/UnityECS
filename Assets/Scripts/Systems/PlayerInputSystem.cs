@@ -5,7 +5,7 @@ using UnityEngine;
 using Unity.Transforms;
 
 [UpdateInGroup(typeof(SimulationSystemGroup))]
-[BurstCompile]
+[BurstCompile] //система будет скомпилирована Burst-ом (очень быстро).
 public partial struct PlayerInputSystem : ISystem
 {
     [BurstCompile]

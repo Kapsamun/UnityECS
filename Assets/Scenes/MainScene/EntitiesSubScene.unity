@@ -150,7 +150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyPrefab: {fileID: 375806019312496616, guid: f78a6d4e5888a08489a14ebff9f2e22d, type: 3}
   SpawnInterval: 3
-  SpawnCount: 500
+  SpawnCount: 5
   SpawnRadius: 25
 --- !u!4 &1287767743
 Transform:

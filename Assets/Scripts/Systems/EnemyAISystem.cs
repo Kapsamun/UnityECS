@@ -11,7 +11,7 @@ public partial struct EnemyAISystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        // Получаем позицию игрока (предполагаем, что он один)
+        // Получаем позицию игрока
         if (!SystemAPI.TryGetSingletonEntity<PlayerTag>(out Entity playerEntity))
             return;
 
@@ -26,7 +26,7 @@ public partial struct EnemyAISystem : ISystem
             target.ValueRW.Value = playerPos;
 
             float3 direction = playerPos - transform.ValueRO.Position;
-            direction.y = 0; // плоскость XZ
+            direction.y = 0;
 
             if (math.lengthsq(direction) > 0.01f)
             {
