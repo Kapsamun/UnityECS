@@ -11,7 +11,6 @@ public partial struct EnemyAISystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        // Получаем позицию игрока
         if (!SystemAPI.TryGetSingletonEntity<PlayerTag>(out Entity playerEntity))
             return;
 
