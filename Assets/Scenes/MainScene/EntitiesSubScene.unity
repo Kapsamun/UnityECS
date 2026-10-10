@@ -221,6 +221,18 @@ MonoBehaviour:
       Amount: 1
     - EnemyType: 0
       Amount: 1
+  - WaitTimeBeforeWave: 5
+    EnemiesInWave:
+    - EnemyType: 0
+      Amount: 1
+    - EnemyType: 0
+      Amount: 1
+    - EnemyType: 0
+      Amount: 1
+    - EnemyType: 0
+      Amount: 1
+    - EnemyType: 0
+      Amount: 1
   SpawnRadius: 20
 --- !u!1001 &4829775918687613285
 PrefabInstance:

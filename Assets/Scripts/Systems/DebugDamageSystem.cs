@@ -8,7 +8,7 @@ public partial struct DebugDamageSystem : ISystem
 {
     public void OnUpdate(ref SystemState state)
     {
-        if (Input.GetKeyDown(KeyCode.L))
+        if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             foreach (var health in SystemAPI.Query<RefRW<Health>>()
                                             .WithAll<EnemyTag>()

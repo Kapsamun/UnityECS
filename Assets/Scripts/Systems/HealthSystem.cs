@@ -25,9 +25,10 @@ public partial struct HealthSystem : ISystem
                           .WithEntityAccess())
         {
             if (health.ValueRO.Current <= 0f)
-
+            {
                 ecb.AddComponent<DeadTag>(entity);
-            ecb.DestroyEntity(entity);
+                ecb.DestroyEntity(entity);
+            }
         }
     }
 }   
