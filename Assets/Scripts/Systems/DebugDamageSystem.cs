@@ -1,12 +1,7 @@
 using Unity.Entities;
 using UnityEngine;
 
-/// <summary>
-/// ¬ременна€ система дл€ теста удалени€.
-/// K Ч 25 урона игроку.
-/// L Ч 15 урона всем врагам (чтобы проверить Destroy через ECB).
-/// ”дали после сдачи практики, если не нужна.
-/// </summary>
+
 [UpdateInGroup(typeof(SimulationSystemGroup))]
 [UpdateBefore(typeof(HealthSystem))]
 public partial struct DebugDamageSystem : ISystem

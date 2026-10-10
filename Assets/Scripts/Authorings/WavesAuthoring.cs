@@ -35,11 +35,9 @@ public class WavesAuthoringBaker : Baker<WavesAuthoring>
 {
     public override void Bake(WavesAuthoring authoring)
     {
-        // --- Создание Blob ---
         var blobBuilder = new BlobBuilder(Allocator.Temp);
         ref var root = ref blobBuilder.ConstructRoot<WavesBlob>();
 
-        // Выделяем массив волн
         BlobBuilderArray<Wave> wavesArray =
             blobBuilder.Allocate(ref root.Waves, authoring.Waves.Count);
 
@@ -48,7 +46,6 @@ public class WavesAuthoringBaker : Baker<WavesAuthoring>
             var srcWave = authoring.Waves[i];
             wavesArray[i].WaitTimeBeforeWave = srcWave.WaitTimeBeforeWave;
 
-            // Выделяем массив врагов внутри волны
             BlobBuilderArray<EnemyInWave> enemiesArray =
                 blobBuilder.Allocate(ref wavesArray[i].Enemies, srcWave.EnemiesInWave.Count);
 
@@ -68,10 +65,9 @@ public class WavesAuthoringBaker : Baker<WavesAuthoring>
 
         blobBuilder.Dispose();
 
-        // Регистрируем Blob (дедупликация + авто-освобождение памяти)
+        // Регистрируем Blob
         AddBlobAsset(ref blobRef, out _);
 
-        // --- Entity с WavesHolder + WaveState ---
         var entity = GetEntity(TransformUsageFlags.None);
 
         AddComponent(entity, new WavesHolder

@@ -1,10 +1,6 @@
 ﻿using Unity.Burst;
 using Unity.Entities;
 
-/// <summary>
-/// Пункт 1: удаление Entity через EntityCommandBuffer.
-/// Если Health.Current <= 0 → уничтожаем врагов.
-/// </summary>
 [UpdateInGroup(typeof(SimulationSystemGroup))]
 [UpdateAfter(typeof(MovementSystem))]
 [BurstCompile]
