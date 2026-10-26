@@ -1,6 +1,6 @@
 using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
-
 
 [UpdateInGroup(typeof(SimulationSystemGroup))]
 [UpdateBefore(typeof(HealthSystem))]
@@ -14,7 +14,7 @@ public partial struct DebugDamageSystem : ISystem
                                             .WithAll<EnemyTag>()
                                             .WithNone<DeadTag>())
             {
-                health.ValueRW.Current -= 15f;
+                health.ValueRW.Current = math.max(0, health.ValueRO.Current - 15f);
             }
             Debug.Log("Damaged all enemies by 15");
         }
@@ -24,7 +24,7 @@ public partial struct DebugDamageSystem : ISystem
             foreach (var health in SystemAPI.Query<RefRW<Health>>()
                                             .WithAll<PlayerTag>())
             {
-                health.ValueRW.Current -= 25f;
+                health.ValueRW.Current = math.max(0, health.ValueRO.Current - 25f);
                 Debug.Log($"Player Health: {health.ValueRO.Current}");
             }
         }

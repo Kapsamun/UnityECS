@@ -6,29 +6,45 @@ using Unity.Entities;
 [BurstCompile]
 public partial struct HealthSystem : ISystem
 {
+    private EntityQuery _query;
+
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<Health>();
+        _query = SystemAPI.QueryBuilder()
+            .WithAll<Health, EnemyTag>()
+            .WithNone<DeadTag>()
+            .Build();
+
+        state.RequireForUpdate(_query);
     }
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
-        var ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
+        var ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter();
 
-        foreach (var (health, entity) in
-                 SystemAPI.Query<RefRO<Health>>()
-                          .WithAll<EnemyTag>()
-                          .WithNone<DeadTag>()
-                          .WithEntityAccess())
+        var job = new HealthJob
         {
-            if (health.ValueRO.Current <= 0f)
-            {
-                ecb.AddComponent<DeadTag>(entity);
-                ecb.DestroyEntity(entity);
-            }
+            ECB = ecb
+        };
+
+        state.Dependency = job.ScheduleParallel(_query, state.Dependency);
+    }
+}
+
+[BurstCompile]
+public partial struct HealthJob : IJobEntity
+{
+    public EntityCommandBuffer.ParallelWriter ECB;
+
+    public void Execute([ChunkIndexInQuery] int chunkIndex, Entity entity, in Health health)
+    {
+        if (health.Current <= 0f)
+        {
+            ECB.AddComponent<DeadTag>(chunkIndex, entity);
+            ECB.DestroyEntity(chunkIndex, entity);
         }
     }
-}   
+}

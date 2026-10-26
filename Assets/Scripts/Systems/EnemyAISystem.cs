@@ -14,28 +14,42 @@ public partial struct EnemyAISystem : ISystem
         if (!SystemAPI.TryGetSingletonEntity<PlayerTag>(out Entity playerEntity))
             return;
 
-        var playerTransform = SystemAPI.GetComponentRO<LocalTransform>(playerEntity);
-        float3 playerPos = playerTransform.ValueRO.Position;
+        float3 playerPos = SystemAPI.GetComponentRO<LocalTransform>(playerEntity).ValueRO.Position;
 
-        foreach (var (target, transform, speed, velocity) in
-                 SystemAPI.Query<RefRW<TargetPosition>, RefRO<LocalTransform>,
-                                 RefRO<MoveSpeed>, RefRW<Velocity>>()
-                          .WithAll<EnemyTag>())
+        var job = new EnemyAIJob
         {
-            target.ValueRW.Value = playerPos;
+            PlayerPosition = playerPos
+        };
+        state.Dependency = job.ScheduleParallel(state.Dependency);
+    }
+}
 
-            float3 direction = playerPos - transform.ValueRO.Position;
-            direction.y = 0;
+[BurstCompile]
+[WithAll(typeof(EnemyTag))]
+[WithNone(typeof(DeadTag))]
+public partial struct EnemyAIJob : IJobEntity
+{
+    public float3 PlayerPosition;
 
-            if (math.lengthsq(direction) > 0.01f)
-            {
-                direction = math.normalize(direction);
-                velocity.ValueRW.Value = direction * speed.ValueRO.Value;
-            }
-            else
-            {
-                velocity.ValueRW.Value = float3.zero;
-            }
+    public void Execute(
+        ref TargetPosition target,
+        ref Velocity velocity,
+        in LocalTransform transform,
+        in MoveSpeed speed)
+    {
+        target.Value = PlayerPosition;
+
+        float3 direction = PlayerPosition - transform.Position;
+        direction.y = 0f;
+
+        if (math.lengthsq(direction) > 0.01f)
+        {
+            direction = math.normalize(direction);
+            velocity.Value = direction * speed.Value;
+        }
+        else
+        {
+            velocity.Value = float3.zero;
         }
     }
 }
