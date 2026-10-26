@@ -7,3 +7,8 @@ public struct AttackRadius : IComponentData
     public float Cooldown;
     public float Timer;
 }
+
+public struct ContactDamage : IComponentData
+{
+    public float Value;
+}

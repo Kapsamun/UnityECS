@@ -28,5 +28,13 @@ public partial struct DebugDamageSystem : ISystem
                 Debug.Log($"Player Health: {health.ValueRO.Current}");
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            foreach (var health in SystemAPI.Query<RefRW<Health>>().WithAll<PlayerTag>())
+            {
+                Debug.Log($"Player Health: {health.ValueRO.Current}");
+            }
+        }
     }
 }
