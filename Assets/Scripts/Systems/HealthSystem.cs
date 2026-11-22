@@ -1,4 +1,5 @@
-﻿using Unity.Burst;
+﻿
+using Unity.Burst;
 using Unity.Entities;
 
 [UpdateInGroup(typeof(SimulationSystemGroup))]
@@ -11,8 +12,9 @@ public partial struct HealthSystem : ISystem
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
+        // Отслеживаем ВСЕ сущности со здоровьем (и врагов, и игрока)
         _query = SystemAPI.QueryBuilder()
-            .WithAll<Health, EnemyTag>()
+            .WithAll<Health>()
             .WithNone<DeadTag>()
             .Build();
 
@@ -41,6 +43,7 @@ public partial struct HealthJob : IJobEntity
 
     public void Execute([ChunkIndexInQuery] int chunkIndex, Entity entity, in Health health)
     {
+        // Если здоровье опустилось до 0 или ниже — уничтожаем сущность
         if (health.Current <= 0f)
         {
             ECB.AddComponent<DeadTag>(chunkIndex, entity);

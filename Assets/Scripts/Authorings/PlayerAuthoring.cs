@@ -9,9 +9,9 @@ public class PlayerAuthoring : MonoBehaviour
     public float Speed = 8f;
 
     [Header("Attack Settings")]
-    public float AttackRadius = 3f;
-    public float AttackDamage = 10f;
-    public float AttackCooldown = 0.5f;
+    public float AttackRadius = 4f;   // Радиус сферы атаки
+    public float AttackDamage = 35f;  // Урон (у врага 30 HP, погибнет с 1 удара)
+    public float AttackCooldown = 0.3f;
 }
 
 public class PlayerAuthoringBaker : Baker<PlayerAuthoring>
@@ -27,11 +27,17 @@ public class PlayerAuthoringBaker : Baker<PlayerAuthoring>
         });
         AddComponent(entity, new MoveSpeed { Value = authoring.Speed });
         AddComponent(entity, new Velocity { Value = float3.zero });
+
+        // Защита от нулевых значений из инспектора
+        float radius = authoring.AttackRadius > 0 ? authoring.AttackRadius : 4f;
+        float damage = authoring.AttackDamage > 0 ? authoring.AttackDamage : 35f;
+        float cooldown = authoring.AttackCooldown > 0 ? authoring.AttackCooldown : 0.3f;
+
         AddComponent(entity, new AttackRadius
         {
-            Value = authoring.AttackRadius,
-            Damage = authoring.AttackDamage,
-            Cooldown = authoring.AttackCooldown,
+            Value = radius,
+            Damage = damage,
+            Cooldown = cooldown,
             Timer = 0f
         });
 

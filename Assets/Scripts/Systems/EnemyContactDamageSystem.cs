@@ -1,4 +1,6 @@
+
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Physics;
 using Unity.Physics.Systems;
@@ -22,6 +24,7 @@ public partial struct EnemyContactDamageSystem : ISystem
 
         var job = new EnemyContactDamageJob
         {
+            DeltaTime = SystemAPI.Time.DeltaTime,
             PlayerLookup = SystemAPI.GetComponentLookup<PlayerTag>(true),
             EnemyLookup = SystemAPI.GetComponentLookup<EnemyTag>(true),
             ContactDamageLookup = SystemAPI.GetComponentLookup<ContactDamage>(true),
@@ -35,26 +38,31 @@ public partial struct EnemyContactDamageSystem : ISystem
 [BurstCompile]
 public partial struct EnemyContactDamageJob : ITriggerEventsJob
 {
-    [Unity.Collections.ReadOnly] public ComponentLookup<PlayerTag> PlayerLookup;
-    [Unity.Collections.ReadOnly] public ComponentLookup<EnemyTag> EnemyLookup;
-    [Unity.Collections.ReadOnly] public ComponentLookup<ContactDamage> ContactDamageLookup;
+    public float DeltaTime;
+
+    [ReadOnly] public ComponentLookup<PlayerTag> PlayerLookup;
+    [ReadOnly] public ComponentLookup<EnemyTag> EnemyLookup;
+    [ReadOnly] public ComponentLookup<ContactDamage> ContactDamageLookup;
     public ComponentLookup<Health> HealthLookup;
 
     public void Execute(TriggerEvent triggerEvent)
     {
-        TryDamagePlayer(triggerEvent.EntityA, triggerEvent.EntityB);
-        TryDamagePlayer(triggerEvent.EntityB, triggerEvent.EntityA);
+        TryApplyContactDamage(triggerEvent.EntityA, triggerEvent.EntityB);
+        TryApplyContactDamage(triggerEvent.EntityB, triggerEvent.EntityA);
     }
 
-    void TryDamagePlayer(Entity maybePlayer, Entity maybeEnemy)
+    private void TryApplyContactDamage(Entity maybePlayer, Entity maybeEnemy)
     {
-        if (!PlayerLookup.HasComponent(maybePlayer)) return;
-        if (!EnemyLookup.HasComponent(maybeEnemy)) return;
-        if (!ContactDamageLookup.HasComponent(maybeEnemy)) return;
-        if (!HealthLookup.HasComponent(maybePlayer)) return;
+        if (PlayerLookup.HasComponent(maybePlayer) && EnemyLookup.HasComponent(maybeEnemy))
+        {
+            if (ContactDamageLookup.HasComponent(maybeEnemy) && HealthLookup.HasComponent(maybePlayer))
+            {
+                float damage = ContactDamageLookup[maybeEnemy].Value;
 
-        float damage = ContactDamageLookup[maybeEnemy].Value;
-        RefRW<Health> playerHealth = HealthLookup.GetRefRW(maybePlayer);
-        playerHealth.ValueRW.Current -= damage * 0.016f;
+                var health = HealthLookup[maybePlayer];
+                health.Current -= damage * DeltaTime;
+                HealthLookup[maybePlayer] = health;
+            }
+        }
     }
 }
