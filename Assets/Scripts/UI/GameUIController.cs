@@ -20,12 +20,12 @@ public class GameUIController : MonoBehaviour
 
     private void Start()
     {
-        // 1. Получаем доступ к миру ECS по умолчанию
+        // Получаем доступ к миру ECS по умолчанию
         if (World.DefaultGameObjectInjectionWorld != null)
         {
             _entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
-            // 2. Создаем быстрые запросы для поиска сущности игрока и синглтона волн
+            // Создаем быстрые запросы для поиска сущности игрока и синглтона волн
             _playerQuery = _entityManager.CreateEntityQuery(
                 ComponentType.ReadOnly<PlayerTag>(),
                 ComponentType.ReadOnly<Health>()
@@ -39,14 +39,11 @@ public class GameUIController : MonoBehaviour
 
     private void Update()
     {
-        // Если мир ECS еще не проинициализирован — выходим
         if (World.DefaultGameObjectInjectionWorld == null)
             return;
 
-        // --- 1. Опрос здоровья игрока ---
         if (!_playerQuery.IsEmpty)
         {
-            // Берем сущность игрока
             Entity playerEntity = _playerQuery.GetSingletonEntity();
             // Считываем компонент Health через EntityManager
             Health playerHealth = _entityManager.GetComponentData<Health>(playerEntity);
@@ -69,7 +66,6 @@ public class GameUIController : MonoBehaviour
             if (HealthText != null) HealthText.text = "HP: 0";
         }
 
-        // --- 2. Опрос номера волны ---
         if (!_waveQuery.IsEmpty)
         {
             Entity waveEntity = _waveQuery.GetSingletonEntity();
